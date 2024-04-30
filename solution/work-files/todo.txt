@@ -1,0 +1,69 @@
+1. Setup MongoDB
+2. Create script that fetches companies (per batch of 5000 records) until all records are processed and stored in MongoDB table.
+   Last Company ID processed will be recorded.
+3. Create script that fetches transactions (per batch of 5000 records, for Swift) until all records are processed and stored in MongoDB table.
+   Last Transaction ID and Timestamp processed will be recorded.
+4. Create script that fetches transactions (per batch of 5000 records, for SEPA) until all records are processed and stored in MongoDB table.
+   Last Transaction ID and Timestamp processed will be recorded.
+5. Create a background worker that processes new companies every minute, using the last processed Transaction ID and Timestamp.
+6. Create a background worker that processes new transactions every minute (for Swift), using the last processed Transaction ID and Timestamp.
+    -- Combine transactions from Swift and SEPA
+7. Create a background worker that processes new transactions every minute (for SEPA), using the last processed Transaction ID and Timestamp.
+    -- Combine transactions from Swift and SEPA
+
+Use Celery w/ Flower for the scheduled tasks  or Agenda/Agendash if NodeJS
+
+
+9. Create an API in python that will query MongoDB.
+
+Widgets:
+Company Selector
+10. Partial search on Company by name
+
+Cash going-in  / Cash going-out  / Profit /Loss
+11. Given a start and end date, and Company ID, 
+ - get total of all transactions where Company IBAN is the receiver
+ - get total of all transactions where Company IBAN is the sender
+ - Get difference on # 11 and #12 results
+
+12. Create a number formatter in UI for current, shortened number, color (green/red)
+
+Cash Flow
+13. Create an api that will aggregate data by month or day (using MongoDB aggregate), and return 
+[
+  { period: 'January', totalReceived: 20, totalPaid: 10 },
+  { period: 'February', totalReceived: 30, totalPaid: 25 },
+  { period: 'March', totalReceived: 40, totalPaid: 35 },
+  { period: 'July', totalReceived: 50, totalPaid: 45 },
+]
+
+or
+
+[
+  { period: '01/01', totalReceived: 20, totalPaid: 10 },
+  { period: '01/02', totalReceived: 30, totalPaid: 25 },
+  { period: '01/02', totalReceived: 40, totalPaid: 35 },
+  { period: '01/03', totalReceived: 50, totalPaid: 45 },
+]
+
+
+Profit/Loss
+14. Create an api that returns the net profit/loss per month or day
+[
+  { period: 'January', net: 20 },
+  { period: 'February', net: 30  },
+  { period: 'March', net: -20 },
+  { period: 'July', net: 10  },
+]
+
+Use recharts PositiveAndNegativeBarChart
+
+
+Transactions by Country
+15. Create an api that returns all transaction count grouped by country
+
+[
+  { country: 'US', count: 20, latitude: 37.0902, longitude: -95.7129  },
+]
+
+Use React Simple Chart and Bubble Chart

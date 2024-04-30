@@ -1,0 +1,42 @@
+version: "3.8"
+
+services:
+  cdm-db:
+    image: "inganalytics/cdm-db-medium:latest"
+    container_name: cdm-db
+    ports:
+      - "5432:5432"
+    networks:
+      - "cdm" 
+    platform: "linux/amd64"     
+
+  cdm-api:
+    image: "inganalytics/cdm-api:latest"
+    container_name: cdm-api
+    environment:
+      - SIZE_SETTING=medium
+    ports:
+      - "8080:8080"
+    networks:
+      - "cdm"        
+    restart: "on-failure"
+    depends_on:
+      - cdm-db
+    platform: "linux/amd64"
+
+  swagger-ui:
+    image: swaggerapi/swagger-ui
+    container_name: swagger-ui
+    environment:
+      - SWAGGER_JSON_URL=http://localhost:8080/apidocs.json
+    ports:
+      - "80:8080"
+    networks:
+      - "cdm"            
+    depends_on:  
+      - cdm-api
+    platform: "linux/amd64"
+       
+networks:
+  cdm:
+    name: "cdm"

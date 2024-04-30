@@ -1,0 +1,99 @@
+# docker-compose.yml
+
+version: "3.8"
+
+services:
+  ### From docker-compose-candidate.yml
+  cdm-db:
+    image: "inganalytics/cdm-db-medium:latest"
+    container_name: cdm-db
+    ports:
+      - "5432:5432"
+    networks:
+      - "cdm" 
+    platform: "linux/amd64"     
+
+  cdm-api:
+    image: "inganalytics/cdm-api:latest"
+    container_name: cdm-api
+    environment:
+      - SIZE_SETTING=medium
+    ports:
+      - "8080:8080"
+    networks:
+      - "cdm"        
+    restart: "on-failure"
+    depends_on:
+      - cdm-db
+    platform: "linux/amd64"
+
+  swagger-ui:
+    image: swaggerapi/swagger-ui
+    container_name: swagger-ui
+    environment:
+      - SWAGGER_JSON_URL=http://localhost:8080/apidocs.json
+    ports:
+      - "80:8080"
+    networks:
+      - "cdm"            
+    depends_on:  
+      - cdm-api
+    platform: "linux/amd64"
+  ### End 
+
+  mongo:
+    image: "mongo:latest"
+    ports:
+      - "27017:27017"
+  networks:
+      - "cdm"
+
+  celery:
+    build:
+      context: .
+    depends_on:
+      - mongo
+    command: celery -A tasks worker --loglevel=info
+    networks:
+      - "cdm"
+
+  flower:
+    image: "mher/flower"
+    command: flower -A tasks --port=5555
+    ports:
+      - "5555:5555"
+    depends_on:
+      - celery
+    networks:
+      - "cdm"
+
+  process_companies:
+    build:
+      context: .
+    depends_on:
+      - celery
+    command: python process_companies.py
+    networks:
+      - "cdm"
+
+  process_swift_trans:
+    build:
+      context: .
+    depends_on:
+      - celery
+    command: python process_swift_trans.py
+    networks:
+      - "cdm"
+
+  process_sepa_trans:
+    build:
+      context: .
+    depends_on:
+      - celery
+    command: python process_sepa_trans.py
+    networks:
+      - "cdm"
+
+networks:
+  cdm:
+    name: "cdm"
