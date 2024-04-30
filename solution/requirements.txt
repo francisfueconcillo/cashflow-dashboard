@@ -1,2 +1,2 @@
-celery[librabbitmq]
+celery[redis]
 pymongo

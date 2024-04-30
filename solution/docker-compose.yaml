@@ -1,5 +1,3 @@
-# docker-compose.yml
-
 version: "3.8"
 
 services:
@@ -42,57 +40,40 @@ services:
   ### End 
 
   mongo:
-    image: "mongo:latest"
+    image: mongo
     ports:
       - "27017:27017"
-  networks:
-      - "cdm"
+    networks:
+      - "cdm" 
 
-  celery:
+  redis:
+    image: 'redis:latest'
+    ports:
+      - "6379:6379"
+    networks:
+      - "cdm" 
+
+  worker:
     build:
       context: .
+    volumes:
+      - .:/app
     depends_on:
       - mongo
-    command: celery -A tasks worker --loglevel=info
+      - redis
     networks:
-      - "cdm"
+      - "cdm" 
 
   flower:
-    image: "mher/flower"
-    command: flower -A tasks --port=5555
+    image: mher/flower
     ports:
       - "5555:5555"
     depends_on:
-      - celery
+      - worker
+      - redis
+    command: celery --broker=redis://redis:6379/0 --result-backend=redis://redis:6379/0 flower
     networks:
-      - "cdm"
-
-  process_companies:
-    build:
-      context: .
-    depends_on:
-      - celery
-    command: python process_companies.py
-    networks:
-      - "cdm"
-
-  process_swift_trans:
-    build:
-      context: .
-    depends_on:
-      - celery
-    command: python process_swift_trans.py
-    networks:
-      - "cdm"
-
-  process_sepa_trans:
-    build:
-      context: .
-    depends_on:
-      - celery
-    command: python process_sepa_trans.py
-    networks:
-      - "cdm"
+      - "cdm" 
 
 networks:
   cdm:

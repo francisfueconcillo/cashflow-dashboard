@@ -10,4 +10,13 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-CMD celery -A tasks worker --loglevel=info
+RUN groupadd -r celerygroup && useradd -r -g celerygroup celeryuser
+
+RUN chown -R celeryuser:celerygroup /app
+
+USER celeryuser
+
+CMD ["celery", "-A", "tasks", "worker", "--beat", "--loglevel=info"]
+
+
+
