@@ -58,8 +58,12 @@ def process_companies():
 
     if response.status_code == 200:
         companies_data = response.json()
+
         count = len(companies_data)
         if (count):
+            for company in companies_data:
+                company['ibans'] = eval(company['ibans'])
+
             companies.insert_many(companies_data)
             last_record = track_last_record('company', companies_data[-1]['id'], datetime.now().isoformat() + 'Z')
             return('%d companies inserted. Last Company ID: %d' % (count, last_record['id']))
@@ -75,6 +79,7 @@ app.conf.beat_schedule = {
     'process_companies': {
         'task': 'tasks.process_companies',
         'schedule': crontab(minute=0, hour=0),  # once a day, every midnight
+        # 'schedule': 10.0,
     },
     # 'return-current-time-20-seconds': {
     #     'task': 'tasks.return_current_time_20',
