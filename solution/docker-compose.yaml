@@ -61,6 +61,13 @@ services:
     depends_on:
       - mongo
       - redis
+    environment:
+      - SYSTEMS_API_BASE_URL=http://cdm-api:8080
+      - CELERY_BROKER_URL=redis://redis:6379/0
+      - CELERY_BACKEND_URL=redis://redis:6379/0
+      - MONGODB_BASE_URL=mongodb://mongo:27017/
+      - MONGODB_DB_NAME=cashflow
+      - BATCH_SIZE=5000
     networks:
       - "cdm" 
 
