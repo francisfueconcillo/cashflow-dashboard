@@ -1,11 +1,19 @@
+DONE::
 1. Setup MongoDB
 2. Create script that fetches companies (per batch of 5000 records) until all records are processed and stored in MongoDB table.
    Last Company ID processed will be recorded.
-3. Create script that fetches transactions (per batch of 5000 records, for Swift) until all records are processed and stored in MongoDB table.
-   Last Transaction ID and Timestamp processed will be recorded.
+3. Create a background worker that processes new companies every minute, using the last processed Transaction ID and Timestamp.
+
+
+
+
+
 4. Create script that fetches transactions (per batch of 5000 records, for SEPA) until all records are processed and stored in MongoDB table.
    Last Transaction ID and Timestamp processed will be recorded.
-5. Create a background worker that processes new companies every minute, using the last processed Transaction ID and Timestamp.
+
+5. Create script that fetches transactions (per batch of 5000 records, for Swift) until all records are processed and stored in MongoDB table.
+   Last Transaction ID and Timestamp processed will be recorded.
+ 
 6. Create a background worker that processes new transactions every minute (for Swift), using the last processed Transaction ID and Timestamp.
     -- Combine transactions from Swift and SEPA
 7. Create a background worker that processes new transactions every minute (for SEPA), using the last processed Transaction ID and Timestamp.

@@ -3,7 +3,7 @@ version: "3.8"
 services:
   ### From docker-compose-candidate.yml
   cdm-db:
-    image: "inganalytics/cdm-db-medium:latest"
+    image: "inganalytics/cdm-db-small:latest"
     container_name: cdm-db
     ports:
       - "5432:5432"
@@ -15,7 +15,7 @@ services:
     image: "inganalytics/cdm-api:latest"
     container_name: cdm-api
     environment:
-      - SIZE_SETTING=medium
+      - SIZE_SETTING=small
     ports:
       - "8080:8080"
     networks:
@@ -56,6 +56,7 @@ services:
   worker:
     build:
       context: .
+      dockerfile: Dockerfile.worker
     volumes:
       - .:/app
     depends_on:
