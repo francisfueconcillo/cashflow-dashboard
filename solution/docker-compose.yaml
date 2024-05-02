@@ -39,6 +39,8 @@ services:
     platform: "linux/amd64"
   ### End 
 
+  
+  
   mongo:
     image: mongo
     ports:
@@ -53,12 +55,40 @@ services:
     networks:
       - "cdm" 
 
+  
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.frontend
+    volumes:
+      - ./frontend:/app
+    depends_on:
+      - api
+      - mongo
+    ports:
+      - "3000:3000"
+    networks:
+      - "cdm" 
+
+  api:
+    build:
+      context: ./api
+      dockerfile: Dockerfile.api
+    volumes:
+      - ./api:/app
+    depends_on:
+      - mongo
+    ports:
+      - "7777:5000"
+    networks:
+      - "cdm" 
+
   worker:
     build:
-      context: .
+      context: ./worker
       dockerfile: Dockerfile.worker
     volumes:
-      - .:/app
+      - ./worker:/app
     depends_on:
       - mongo
       - redis
