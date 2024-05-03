@@ -1,8 +1,10 @@
 import os
 from flask import Flask, request, jsonify
 from pymongo import MongoClient
+from flask_cors import CORS
 
 app = Flask(__name__)
+CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
 
 MONGODB_BASE_URL=os.environ.get('MONGODB_BASE_URL')
 MONGODB_DB_NAME=os.environ.get('MONGODB_DB_NAME')
@@ -16,16 +18,20 @@ transactions_collection = db['transactions']
 
 
 # GET /companies/?q=xxx
-@app.route('/companies', methods=['GET'])
+@app.route('/companies', methods=['GET', 'OPTIONS'])
 def get_companies():
     q = request.args.get('q')
     query = {}
     
-    if q is not None:
-        query = { 'name': { '$regex': q, '$options': "i" } }
+    
 
     try:
-        results = list(companies_collection.find(query).limit(50))
+        if q is not None:
+            query = { 'name': { '$regex': q, '$options': "i" } }
+        else:
+            query = {}
+
+        results = list(companies_collection.find(query).limit(50).sort('name', 1))
 
         # Convert results to JSON
         json_results = [{ 
@@ -43,7 +49,7 @@ def get_companies():
         return str(e)
 
 # GET /totals/?currency=eur&company_id=xx
-@app.route('/totals')
+@app.route('/totals', methods=['GET', 'OPTIONS'])
 def get_totals():
     currency = request.args.get('currency')
     company_id = request.args.get('company_id')
@@ -83,7 +89,7 @@ def get_totals():
         return str(e)
 
 # GET /transactions/?currency=eur&agg=day&&company_id=xx   (aggregation = day|month|country, default: month)
-@app.route('/transactions')
+@app.route('/transactions', methods=['GET', 'OPTIONS'])
 def get_transactions():
     currency = request.args.get('currency')
     company_id = request.args.get('company_id')
