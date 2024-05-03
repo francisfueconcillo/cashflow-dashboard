@@ -1,5 +1,6 @@
 import os
 import requests
+from datetime import datetime, timezone
 
 SYSTEMS_API_BASE_URL=os.environ.get('SYSTEMS_API_BASE_URL')
 
@@ -83,11 +84,11 @@ def save_transaction(transaction, exchange_rates, transactions_collection, compa
     if payment_type=='swift':
         payerKey = 'sender'
         receiverKey = 'beneficiary'
-        
-    # process payer
-    company = get_company_by_iban(transaction[payerKey], companies_collection)
-    
+
     rates = [item for item in exchange_rates if item['currency'] == transaction['currency']]
+
+    date_str_no_milli = transaction['timestamp'].split('.')[0]
+    timestamp_iso_date = datetime.fromisoformat(date_str_no_milli)
 
     # NOTE: if no exchange rates available for a given transaction, we make them 1:1 with usd and euro
     if len(rates):
@@ -95,6 +96,8 @@ def save_transaction(transaction, exchange_rates, transactions_collection, compa
     else: 
         rates = { 'usd_rate': 1, 'eur_rate': 1 }
         
+    # process payer
+    company = get_company_by_iban(transaction[payerKey], companies_collection)
     if company is not None:
         record = {
             'company_id': company['id'], 
@@ -107,7 +110,8 @@ def save_transaction(transaction, exchange_rates, transactions_collection, compa
             'eur_rate': rates['eur_rate'],
             'country_code': transaction[payerKey][:2],
             'payment_type': payment_type,
-            'transaction_type': 'debit'
+            'transaction_type': 'debit',
+            'timestamp': timestamp_iso_date
         }
 
         transactions_collection.insert_one(record)
@@ -126,7 +130,8 @@ def save_transaction(transaction, exchange_rates, transactions_collection, compa
             'eur_rate': rates['eur_rate'],
             'country_code': transaction[receiverKey][:2],
             'payment_type': payment_type,
-            'transaction_type': 'credit'
+            'transaction_type': 'credit',
+            'timestamp': timestamp_iso_date
         }
 
         transactions_collection.insert_one(record)

@@ -203,13 +203,13 @@ app.conf.beat_schedule = {
     },
     'process_swift_trans': {
         'task': 'tasks.process_swift_trans',
-        # 'schedule': 60.0,   # every 60 seconds
-        'schedule': None   # disable
+        'schedule': 60.0,   # every 60 seconds
+        # 'schedule': None   # disable
     },
     'process_sepa_trans': {
         'task': 'tasks.process_sepa_trans',
-        # 'schedule': 60.0,   # every 60 seconds
-        'schedule': None   # disable
+        'schedule': 60.0,   # every 60 seconds
+        # 'schedule': None   # disable
     },
 }
 
