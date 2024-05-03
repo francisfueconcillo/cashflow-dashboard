@@ -32,6 +32,7 @@ def get_companies():
             'id': str(doc['id']), 
             'name': doc['name'],
             'address': doc['address'],
+            'ibans': doc['ibans'],
             'value': str(doc['id']),
             'label':  doc['name'],
         } for doc in results]

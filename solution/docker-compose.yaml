@@ -56,19 +56,19 @@ services:
       - "cdm" 
 
   
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile.frontend
-    volumes:
-      - ./frontend:/app
-    depends_on:
-      - api
-      - mongo
-    ports:
-      - "3000:3000"
-    networks:
-      - "cdm" 
+  # frontend:
+  #   build:
+  #     context: ./frontend
+  #     dockerfile: Dockerfile.frontend
+  #   volumes:
+  #     - ./frontend:/app
+  #   depends_on:
+  #     - api
+  #     - mongo
+  #   ports:
+  #     - "3000:3000"
+  #   networks:
+  #     - "cdm" 
 
   api:
     build:
