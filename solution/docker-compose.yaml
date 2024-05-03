@@ -80,6 +80,9 @@ services:
       - mongo
     ports:
       - "7777:5000"
+    environment:
+      - MONGODB_BASE_URL=mongodb://mongo:27017/
+      - MONGODB_DB_NAME=cashflow
     networks:
       - "cdm" 
 

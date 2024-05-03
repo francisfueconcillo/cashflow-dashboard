@@ -63,10 +63,12 @@ def save_last_exchange_rates(rates, ts, exchange_rates_collection):
     }
     exchange_rates_collection.insert_one(last_record_processed)
 
-def create_companies_collection_index(companies_collection):
+def create_companies_collection_index(companies_collection):    
     if 'ibans_1' not in companies_collection.index_information():
-        # Create index on the 'ibans' field
         companies_collection.create_index([('ibans', 1)])
+    if 'name_text' not in companies_collection.index_information():
+        companies_collection.create_index([("name", "text")])
+
 
 def get_company_by_iban(iban, companies_collection):
     query = {'ibans': {'$in': [iban]}}
