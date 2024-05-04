@@ -10,16 +10,17 @@ import TransactionsWorldMap from '../components/TransactionsWorldMap';
 import { initialAppState } from '../context/AppContext';
 
 import { useAppContext } from '../context/AppContext';
-import { fetchCompanies } from '../requests';
+import { fetchCompanies, fetchTotals } from '../requests';
 import Company from '../context/types/Company';
 import { toast } from '../components/ui/use-toast';
 import { Toaster } from "../components/ui/toaster"
 import CurrencySelector from '../components/CurrencySelector';
 import AutoRefreshSwitch from '../components/AutoRefreshSwitch';
+import Totals from '@/context/types/Totals';
 
 function Home() {
 
-  const { company, setCompany, allCompanies, setAllCompanies } = useAppContext()
+  const { company, setCompany, allCompanies, setAllCompanies, totals, setTotals } = useAppContext()
 
   const companySelectHandler = (companyId: string) => {
     if (company?.id !== companyId) {
@@ -50,6 +51,25 @@ function Home() {
   }, [allCompanies])
 
 
+  useEffect(()=>{
+    if (company !== initialAppState.company && company) {
+      fetchTotals('USD', company.id)
+        .then((totalsData: Totals[]) => {
+          if (totalsData.length) {
+            setTotals(totalsData[0]);
+          }
+        })
+        .catch(error => {
+          toast({
+            variant: "destructive",
+            title: "Something's wrong. 🐾",
+            description: error.message + '. Try reloading the page.',
+          })
+        });
+    }
+  }, [company])
+
+
   const data = [
     { country: 'USA', value: 100 },
     { country: 'Canada', value: 50 },
@@ -58,7 +78,7 @@ function Home() {
   ];
 
   return (
-    <div className="grid grid-cols-5 gap-4">
+    <div className="grid grid-cols-5 gap-4 px-6">
 
       <div>
         <CompanySelector companies={allCompanies} selectHandler={companySelectHandler}/>
@@ -77,17 +97,32 @@ function Home() {
 
 
       <div className="col-start-1 col-end-3">
-        <CompanyCard/>
+        <CompanyCard company={company}/>
       </div>
 
       <div>
-        <NumberCard title="Cash going-in" value={100000} currency="USD"/>
+        <NumberCard 
+          title="Cash going-in" 
+          totals={totals} 
+          type="credit" 
+          currency="USD"
+        />
       </div>
       <div>
-        <NumberCard title="Cash going-out" value={23000} currency="USD"/>
+        <NumberCard 
+          title="Cash going-out" 
+          totals={totals} type="debit"  
+          currency="USD"
+        />
       </div>
       <div>
-        <NumberCard title="Profit/Loss" value={77000} currency="USD"/>
+        <NumberCard 
+          title="Profit/Loss" 
+          totals={totals} 
+          type="profit_loss" 
+          currency="USD"
+          useColors={true}
+        />
       </div>
       <div className="col-span-5">
         <TransactionsCard/>

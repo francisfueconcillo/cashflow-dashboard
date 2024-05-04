@@ -38,7 +38,7 @@ function CompanySelector({ companies, selectHandler }: Props) {
   }
 
   return (
-    <div className="flex items-center p-4">
+    <div className="flex items-center py-4">
       <p className="pr-4">Company: </p>
       <Popover open={open} onOpenChange={setOpen}>
 
