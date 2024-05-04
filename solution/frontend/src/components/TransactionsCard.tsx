@@ -1,27 +1,68 @@
-import React from 'react';
+import Transactions from '../context/types/Transactions';
+import React, { useEffect, useState } from 'react';
 import { BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip, Legend } from 'recharts';
+import { formatNumber } from '../utils';
 
-const data = [
-  { name: 'A', value1: 10, value2: 20 },
-  { name: 'B', value1: 20, value2: 30 },
-  { name: 'C', value1: 30, value2: 25 },
-  { name: 'D', value1: 40, value2: 35 },
-  { name: 'E', value1: 50, value2: 45 },
-];
+type CharDataPoint = {
+  name: string,
+  'Cash-in': number ,
+  'Cash-out': number,
+}
 
-const TransactionsCard = () => {
+type Props = {
+  transactions: Transactions[] | [],
+  type: string,
+}
+
+const TransactionsCard = ({ transactions, type }: Props) => {
+
+  const initialChartData: CharDataPoint[] | [] = [];
+
+  const [chartData, setChartData] = useState(initialChartData)
+
+  useEffect(()=>{
+
+    if (transactions.length) {
+      let newChartData: CharDataPoint[] | [] = [];
+
+      newChartData = transactions.map((trans:Transactions) => { 
+        const datapoint: CharDataPoint = {
+          name: type ==='day' ? trans.year+'-'+trans.month+'-'+trans.day : trans.year+'-'+trans.month, 
+          'Cash-in': trans.total_credits, 
+          'Cash-out': trans.total_debits,
+        }
+        return datapoint;
+      })
+
+      setChartData(newChartData);
+    }
+
+  }, [transactions])
+
   return (
-    <div  className='flex p-4'>
+    <div  className='flex flex-col p-4 bg-white rounded-xl'>
       <h3>Transactions</h3>
-      <BarChart width={1200} height={300} data={data} title='Transactions'>
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="name" />
-        <YAxis />
-        <Tooltip />
-        <Legend />
-        <Bar dataKey="value1" fill="#8884d8" />
-        <Bar dataKey="value2" fill="#82ca9d" />
-      </BarChart>
+
+      {
+        chartData.length
+        ? <div className="flex items-center justify-center">
+            <BarChart width={1200} height={300} data={chartData} title='Transactions'>
+              <CartesianGrid strokeDasharray="3 3" />
+              <XAxis dataKey="name" />
+              <YAxis />
+              <Tooltip />
+              <Legend/>
+              <Bar dataKey="Cash-in" fill="#82ca9d" />
+              <Bar dataKey="Cash-out" fill="#C64242" />
+            </BarChart>
+          </div> 
+        : <div className="flex items-center justify-center h-36">
+            <p className="text-center text-gray-300">No data</p>
+          </div>
+      }
+
+
+      
     </div>
     
   );

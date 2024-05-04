@@ -1,6 +1,7 @@
 import React from 'react';
 import Totals from '@/context/types/Totals';
 import clsx from 'clsx';
+import { formatNumber } from '../utils';
 
 type Props = {
   title: string,
@@ -9,20 +10,6 @@ type Props = {
   type: string,
   useColors?: boolean
 }
-
-function formatNumber(number: number) {
-  const suffixes = ['', 'K', 'M', 'B', 'T'];
-  const tier = Math.log10(Math.abs(number)) / 3 | 0;
-  const suffix = suffixes[tier];
-
-  if (tier === 0) return number;
-
-  const scale = Math.pow(10, tier * 3);
-  const scaled = number / scale;
-
-  return scaled.toFixed(2) + suffix;
-}
-
 
 function NumberCard({ title, totals, type, currency, useColors }: Props) {
   let value: number = 0;
@@ -55,7 +42,7 @@ function NumberCard({ title, totals, type, currency, useColors }: Props) {
         <p className="text-sm">{title}</p>
       </div>
 
-      <div  className="flex justify-end">
+      <div  className="flex justify-end space-x-2">
         <div>
           <p>{currency}</p>
         </div>

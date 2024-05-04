@@ -10,17 +10,23 @@ import TransactionsWorldMap from '../components/TransactionsWorldMap';
 import { initialAppState } from '../context/AppContext';
 
 import { useAppContext } from '../context/AppContext';
-import { fetchCompanies, fetchTotals } from '../requests';
+import { fetchCompanies, fetchTotals, fetchTransactions } from '../requests';
 import Company from '../context/types/Company';
 import { toast } from '../components/ui/use-toast';
 import { Toaster } from "../components/ui/toaster"
 import CurrencySelector from '../components/CurrencySelector';
 import AutoRefreshSwitch from '../components/AutoRefreshSwitch';
-import Totals from '@/context/types/Totals';
+import Totals from '../context/types/Totals';
+import Transactions from '../context/types/Transactions';
 
 function Home() {
 
-  const { company, setCompany, allCompanies, setAllCompanies, totals, setTotals } = useAppContext()
+  const { 
+    company, setCompany, 
+    allCompanies, setAllCompanies, 
+    totals, setTotals,
+    transactions, setTransactions,
+  } = useAppContext()
 
   const companySelectHandler = (companyId: string) => {
     if (company?.id !== companyId) {
@@ -53,6 +59,8 @@ function Home() {
 
   useEffect(()=>{
     if (company !== initialAppState.company && company) {
+
+      // fetch Total for the NumberCards
       fetchTotals('USD', company.id)
         .then((totalsData: Totals[]) => {
           if (totalsData.length) {
@@ -66,8 +74,26 @@ function Home() {
             description: error.message + '. Try reloading the page.',
           })
         });
+
+      // fetch Transactions by Month for the Transactions Graph
+      fetchTransactions('USD', company.id)
+        .then((transactions: Transactions[]) => {
+          if (transactions.length) {
+            setTransactions(transactions);
+          }
+        })
+        .catch(error => {
+          toast({
+            variant: "destructive",
+            title: "Something's wrong. 🐾",
+            description: error.message + '. Try reloading the page.',
+          })
+        });
     }
   }, [company])
+
+
+
 
 
   const data = [
@@ -125,11 +151,11 @@ function Home() {
         />
       </div>
       <div className="col-span-5">
-        <TransactionsCard/>
+        <TransactionsCard transactions={transactions} type="month"/>
       </div>
 
       <div className="col-span-2">
-        <ProfitLossCard/>
+        <ProfitLossCard transactions={transactions}/>
       </div>
 
       <div className="col-span-3">

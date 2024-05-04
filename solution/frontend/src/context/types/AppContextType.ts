@@ -1,8 +1,7 @@
 import Company from './Company';
 import Totals from './Totals';
 import TransactionsByCountry from './TransactionsByCountry';
-import TransactionsByDay from './TransactionsByDay';
-import TransactionsByMonth from './TransactionsByMonth';
+import Transactions from './Transactions';
 
 type AppContextType = {
   company: Company | null,
@@ -11,10 +10,8 @@ type AppContextType = {
   setAllCompanies: (companies: Company[] | []) => void,
   totals: Totals | null,
   setTotals: (totals: Totals | null) => void,
-  transactionsByMonth: TransactionsByMonth[],
-  setTransactionsByMonth: (transactionsByMonth: TransactionsByMonth[] | []) => void,
-  transactionsByDay: TransactionsByDay[],
-  setTransactionsByDay: (transactionsByDay: TransactionsByDay[] | []) => void,
+  transactions: Transactions[] | [],
+  setTransactions: (transactions: Transactions[] | []) => void,
   transactionsByCountry: TransactionsByCountry[],
   setTransactionsByCountry: (transactionsByCountry: TransactionsByCountry[] | []) => void,
 };

@@ -1,10 +1,10 @@
-type TransactionsByDay = {
+type Transactions = {
   month: number,
   profit_loss: number,
   total_credits: number,
   total_debits: number,
   year: number,
-  day: number,
+  day?: number,
 };
 
-export default TransactionsByDay;
+export default Transactions;

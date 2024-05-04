@@ -31,7 +31,7 @@ const errorHandler = (error: any) => {
   }
 }
 
-
+// GET /companies/?q=xx
 const fetchCompanies = async () => {
   try {
     const url = `${AppConfig.API_BASE_URL}/companies`;
@@ -40,18 +40,15 @@ const fetchCompanies = async () => {
   } catch (error: any) {
     errorHandler(error)
   }
-
 }
 
+// GET /totals/?currency=eur&company_id=xx
 const fetchTotals = async(currency: string, companyId: string) => {
-
-  
   try {
     if (companyId && companyId === "") {
       throw Error("companyId is required.");
     }
-
-    // GET /totals/?currency=eur&company_id=xx
+    
     let queryParams = `?company_id=${companyId}`
 
     if (currency && currency !== "") {
@@ -68,5 +65,33 @@ const fetchTotals = async(currency: string, companyId: string) => {
 }
 
 
-export { fetchCompanies, fetchTotals };
+// GET /transactions/?currency=eur&agg=day&&company_id=xx   (aggregation = day|month|country, default: month)
+const fetchTransactions = async (currency: string, companyId: string, aggregate?: string) => {
+  try {
+    if (companyId && companyId === "") {
+      throw Error("companyId is required.");
+    }
+    
+    let queryParams = `?company_id=${companyId}`
+
+    if (currency && currency !== "") {
+      queryParams = `${queryParams}&currency=${currency}`
+    }
+
+    if (aggregate && aggregate !== "") {
+      queryParams = `${queryParams}&agg=${aggregate}`
+    }
+
+    const url = `${AppConfig.API_BASE_URL}/transactions${queryParams}`;
+    const response = await axios.get(url, config);
+    return response.data;
+
+  } catch (error: any) {
+    errorHandler(error);
+  }
+}
+
+
+
+export { fetchCompanies, fetchTotals, fetchTransactions };
 

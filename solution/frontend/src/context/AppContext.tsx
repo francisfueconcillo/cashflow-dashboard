@@ -3,8 +3,7 @@ import React, { createContext, useState, useContext, ReactElement, useEffect } f
 import AppContextType from './types/AppContextType';
 import Company from './types/Company';
 import Totals from './types/Totals';
-import TransactionsByMonth from './types/TransactionsByMonth';
-import TransactionsByDay from './types/TransactionsByDay';
+import Transactions from './types/Transactions';
 import TransactionsByCountry from './types/TransactionsByCountry';
 
 const initialAppState: AppContextType = {
@@ -14,10 +13,8 @@ const initialAppState: AppContextType = {
   setAllCompanies: () => {},
   totals: null,
   setTotals: () => {},
-  transactionsByMonth: [],
-  setTransactionsByMonth: () => {},
-  transactionsByDay: [],
-  setTransactionsByDay: () => {},
+  transactions: [],
+  setTransactions: () => {},
   transactionsByCountry: [],
   setTransactionsByCountry: () => {},
 };
@@ -32,8 +29,7 @@ const AppProvider = ({children}: Props) => {
   const [company, setCompany] = useState<Company | null>(initialAppState.company);
   const [allCompanies, setAllCompanies] = useState<Company[] | []>(initialAppState.allCompanies);
   const [totals, setTotals] = useState<Totals | null>(initialAppState.totals);
-  const [transactionsByMonth, setTransactionsByMonth] = useState<TransactionsByMonth[] | []>(initialAppState.transactionsByMonth);
-  const [transactionsByDay, setTransactionsByDay] = useState<TransactionsByDay[] | []>(initialAppState.transactionsByDay);
+  const [transactions, setTransactions] = useState<Transactions[] | []>(initialAppState.transactions);
   const [transactionsByCountry, setTransactionsByCountry] = useState<TransactionsByCountry[] | []>(initialAppState.transactionsByCountry);
 
 
@@ -42,8 +38,7 @@ const AppProvider = ({children}: Props) => {
         company, setCompany, 
         allCompanies, setAllCompanies,
         totals, setTotals,
-        transactionsByMonth, setTransactionsByMonth,
-        transactionsByDay, setTransactionsByDay,
+        transactions, setTransactions,
         transactionsByCountry, setTransactionsByCountry
     }}>
       {children}
