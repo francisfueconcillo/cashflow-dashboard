@@ -93,5 +93,8 @@ const fetchTransactions = async (currency: string, companyId: string, aggregate?
 
 
 
+
+
+
 export { fetchCompanies, fetchTotals, fetchTransactions };
 
