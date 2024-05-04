@@ -1,31 +1,45 @@
 import * as React from "react"
 
-import {
-  Select,
-  SelectContent,
-  SelectGroup,
-  SelectItem,
-  SelectLabel,
-  SelectTrigger,
-  SelectValue,
-} from "./ui/select"
+import DropDownSelect, { SelectOption } from "./DropDownSelect";
+import DateRangePicker from "./DateRangePicker";
 
 function PeriodSelector() {
+
+  const options: SelectOption[] = [{
+      name: 'All',
+      value: 'all'
+    }, {
+      name: 'Year-to-date',
+      value: 'ytd'
+    }, {
+      name: 'This Month',
+      value: 'this-month'
+    }, {
+      name: 'Last Month',
+      value: 'last-month'
+    }, {
+      name: 'This Year',
+      value: 'this-year'
+    }, {
+      name: 'Last Year',
+      value: 'last-year'
+    }, {
+      name: 'Custom',
+      value: 'custom'
+    },
+  ];
+  
   return (
-    <div className="flex p-4">
-      <Select>
-        <SelectTrigger className="w-[180px]">
-          <SelectValue placeholder="Select Period" />
-        </SelectTrigger>
-        <SelectContent>
-          <SelectGroup>
-            <SelectLabel>Period</SelectLabel>
-            <SelectItem value="apple">YTD</SelectItem>
-            <SelectItem value="banana">This Month</SelectItem>
-            <SelectItem value="blueberry">Custom</SelectItem>
-          </SelectGroup>
-        </SelectContent>
-      </Select>
+    <div className="flex items-center p-4">
+      <p className="pr-4">Period: </p>
+      <DropDownSelect 
+        options={options} 
+        placeholderText="Select a period" 
+        title="Period"
+        defaultValue="all"
+      />
+
+      <DateRangePicker/>
     </div>
     
   )

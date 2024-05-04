@@ -29,10 +29,10 @@ function CompanySelector({ companies, selectHandler }: Props) {
   const [open, setOpen] = React.useState(false)
   const [value, setValue] = React.useState('')
 
-  const itemSelectHandler = (catId: string) => {
-    if (catId !== '') {
-      setValue(catId);
-      selectHandler(catId);
+  const itemSelectHandler = (companyId: string) => {
+    if (companyId !== '') {
+      setValue(companyId);
+      selectHandler(companyId);
     }
     setOpen(false);
   }

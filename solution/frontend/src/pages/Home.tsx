@@ -6,20 +6,29 @@ import CompanyCard from '../components/CompanyCard';
 import NumberCard from '../components/NumberCard';
 import TransactionsCard from '../components/TransactionsCard';
 import ProfitLossCard from '../components/ProfitLossCard';
-import TransactionsWorldMap from '../components/TransactionWorldMap';
-import { AppProvider, initialAppState } from '../context/AppContext';
+import TransactionsWorldMap from '../components/TransactionsWorldMap';
+import { initialAppState } from '../context/AppContext';
 
 import { useAppContext } from '../context/AppContext';
 import { fetchCompanies } from '../requests';
 import Company from '../context/types/Company';
 import { toast } from '../components/ui/use-toast';
 import { Toaster } from "../components/ui/toaster"
+import CurrencySelector from '../components/CurrencySelector';
+import AutoRefreshSwitch from '../components/AutoRefreshSwitch';
 
 function Home() {
 
-  const { allCompanies, setAllCompanies } = useAppContext()
+  const { company, setCompany, allCompanies, setAllCompanies } = useAppContext()
 
-  const companySelectHandler = () => {}
+  const companySelectHandler = (companyId: string) => {
+    if (company?.id !== companyId) {
+      const selectedCompany = allCompanies.find(company => company.id === companyId) || null;
+      if (selectedCompany) {
+        setCompany(selectedCompany);
+      }
+    }
+  }
 
 
   useEffect(() => {
@@ -40,19 +49,32 @@ function Home() {
     }
   }, [allCompanies])
 
+
+  const data = [
+    { country: 'USA', value: 100 },
+    { country: 'Canada', value: 50 },
+    { country: 'UK', value: 80 },
+    // Add more countries and their transaction counts
+  ];
+
   return (
     <div className="grid grid-cols-5 gap-4">
-      <div className="col-span-5">
-        <Header/>
-      </div>
 
       <div>
         <CompanySelector companies={allCompanies} selectHandler={companySelectHandler}/>
       </div>
 
-      <div>
+      <div className="col-span-2">
         <PeriodSelector/>
       </div>
+
+      <div>
+        <CurrencySelector/>
+      </div>
+      <div>
+        <AutoRefreshSwitch defaultChecked={false}/>
+      </div>
+
 
       <div className="col-start-1 col-end-3">
         <CompanyCard/>
