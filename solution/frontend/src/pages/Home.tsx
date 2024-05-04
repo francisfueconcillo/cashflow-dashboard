@@ -18,6 +18,7 @@ import CurrencySelector from '../components/CurrencySelector';
 import AutoRefreshSwitch from '../components/AutoRefreshSwitch';
 import Totals from '../context/types/Totals';
 import Transactions from '../context/types/Transactions';
+import TransactionsByCountry from '../context/types/TransactionsByCountry';
 
 function Home() {
 
@@ -26,6 +27,7 @@ function Home() {
     allCompanies, setAllCompanies, 
     totals, setTotals,
     transactions, setTransactions,
+    transactionsByCountry, setTransactionsByCountry,
   } = useAppContext()
 
   const companySelectHandler = (companyId: string) => {
@@ -77,9 +79,9 @@ function Home() {
 
       // fetch Transactions by Month for the Transactions Graph
       fetchTransactions('USD', company.id)
-        .then((transactions: Transactions[]) => {
-          if (transactions.length) {
-            setTransactions(transactions);
+        .then((trans: Transactions[]) => {
+          if (trans.length) {
+            setTransactions(trans);
           }
         })
         .catch(error => {
@@ -89,6 +91,25 @@ function Home() {
             description: error.message + '. Try reloading the page.',
           })
         });
+
+      // fetch Transactions by Country for the Transactions Graph
+      fetchTransactions('USD', company.id, 'country')
+        .then((trans: TransactionsByCountry[]) => {
+          if (trans.length) {
+            setTransactionsByCountry(trans);
+          }
+        })
+        .catch(error => {
+          toast({
+            variant: "destructive",
+            title: "Something's wrong. 🐾",
+            description: error.message + '. Try reloading the page.',
+          })
+        });
+
+      
+
+
     }
   }, [company])
 
@@ -154,12 +175,12 @@ function Home() {
         <TransactionsCard transactions={transactions} type="month"/>
       </div>
 
-      <div className="col-span-2">
+      <div className="col-span-3">
         <ProfitLossCard transactions={transactions}/>
       </div>
 
-      <div className="col-span-3">
-        <TransactionsWorldMap/>
+      <div className="col-span-2">
+        <TransactionsWorldMap transactions={transactionsByCountry}/>
       </div>
       <Toaster />
     </div>

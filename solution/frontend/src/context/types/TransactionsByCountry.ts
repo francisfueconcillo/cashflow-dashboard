@@ -1,5 +1,5 @@
 type TransactionsByCountry = {
-  _id: string,
+  country: string,
   transaction_count: number,
 };
 

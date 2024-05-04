@@ -175,6 +175,11 @@ def get_transactions():
                         'transaction_count': { '$sum': 1 }  # Count number of transactions in each group
                     }
                 }, {
+                    "$project": {
+                        "country": "$_id",
+                        "transaction_count": 1,
+                    }
+                }, {
                     '$sort': {
                         'transaction_count': -1
                     }
