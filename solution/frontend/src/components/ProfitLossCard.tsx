@@ -42,6 +42,8 @@ const ProfitLossCard = ({ transactions, isLoading }: Props) => {
       })
 
       setChartData(newChartData);
+    } else {
+      setChartData(initialChartData);
     }
 
   }, [transactions])

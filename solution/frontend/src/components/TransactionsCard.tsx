@@ -36,6 +36,8 @@ const TransactionsCard = ({ transactions, type, isLoading }: Props) => {
       })
 
       setChartData(newChartData);
+    } else {
+      setChartData(initialChartData)
     }
 
   }, [transactions])
