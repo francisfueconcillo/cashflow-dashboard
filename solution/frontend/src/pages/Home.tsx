@@ -160,26 +160,26 @@ function Home() {
 
 
   return (
-    <div className="grid grid-cols-5 gap-4 px-6">
+    <div className="grid grid-cols-5 gap-4 p-6 ">
 
-      <div>
+      <div className="col-span-5 lg:col-span-1">
         <CompanySelector 
           companies={allCompanies} 
           selectHandler={companySelectHandler}
         />
       </div>
 
-      <div className="col-span-2">
+      <div className="col-span-5 lg:col-span-2">
         <PeriodSelector/>
       </div>
 
-      <div>
+      <div className="col-span-3 lg:col-span-1">
         <CurrencySelector 
           currency={currency} 
           changeHandler={changeCurrencyHandler}
         />
       </div>
-      <div>
+      <div className="col-span-2 lg:col-span-1">
         <AutoRefreshSwitch 
           checked={autoRefresh}
           changeHandler={(value: boolean) => setAutoRefresh(value)}
@@ -187,14 +187,14 @@ function Home() {
       </div>
 
 
-      <div className="col-start-1 col-end-3">
+      <div className="col-span-5 lg:col-start-1 lg:col-end-3">
         <CompanyCard 
           company={company}  
           isLoading={companyLoading}
         />
       </div>
 
-      <div>
+      <div className="col-span-5 lg:col-span-1">
         <NumberCard 
           title="Cash going-in" 
           totals={totals} 
@@ -203,7 +203,7 @@ function Home() {
           isLoading={totalsLoading}
         />
       </div>
-      <div>
+      <div className="col-span-5 lg:col-span-1">
         <NumberCard 
           title="Cash going-out" 
           totals={totals} type="debit"  
@@ -211,7 +211,7 @@ function Home() {
           isLoading={totalsLoading}
         />
       </div>
-      <div>
+      <div className="col-span-5 lg:col-span-1">
         <NumberCard 
           title="Profit/Loss" 
           totals={totals} 
@@ -228,14 +228,14 @@ function Home() {
         />
       </div>
 
-      <div className="col-span-3">
+      <div className="col-span-5 lg:col-span-3">
         <ProfitLossCard 
           transactions={transactions}
           isLoading={transactionsLoading}
         />
       </div>
 
-      <div className="col-span-2">
+      <div className="col-span-5 lg:col-span-2">
         <TransactionsWorldMap 
           transactions={transactionsByCountry}
           isLoading={transactionsByCountryLoading}
