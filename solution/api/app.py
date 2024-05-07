@@ -2,6 +2,8 @@ import os
 from flask import Flask, request, jsonify
 from pymongo import MongoClient
 from flask_cors import CORS
+from datetime import datetime
+from utils import convert_isodate_str_to_datetime
 
 app = Flask(__name__)
 CORS(app, resources={r"/*": {"origins": "http://localhost:3000"}})
@@ -22,8 +24,6 @@ transactions_collection = db['transactions']
 def get_companies():
     q = request.args.get('q')
     query = {}
-    
-    
 
     try:
         if q is not None:
@@ -53,13 +53,22 @@ def get_companies():
 def get_totals():
     currency = request.args.get('currency')
     company_id = request.args.get('company_id')
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
 
     if currency is None:
         currency = 'USD'
-    
+
     try:
         if company_id is None:
             raise Exception('company_id parameter is required.')
+        
+        if start_date is None or end_date is None:
+            start_date = datetime(2018, 1, 1, 0, 0, 0)
+            end_date = datetime.now()
+        else:
+            start_date = convert_isodate_str_to_datetime(start_date)
+            end_date = convert_isodate_str_to_datetime(end_date)
         
         amount_field = '$amount_usd' if currency == 'USD' else '$amount_eur'
     
@@ -67,6 +76,10 @@ def get_totals():
             { 
                 '$match': { 
                     'company_id': { '$eq': int(company_id) }, 
+                    'timestamp': {
+                        '$gte': start_date,
+                        '$lte': end_date
+                    }
                 } 
             }, { 
                 '$group': { 
@@ -94,6 +107,8 @@ def get_transactions():
     currency = request.args.get('currency')
     company_id = request.args.get('company_id')
     aggregate = request.args.get('agg')
+    start_date = request.args.get('start_date')
+    end_date = request.args.get('end_date')
 
     if currency is None:
         currency = 'USD'
@@ -103,6 +118,13 @@ def get_transactions():
     try:
         if company_id is None:
             raise Exception('company_id parameter is required.')
+
+        if start_date is None or end_date is None:
+            start_date = datetime(2018, 1, 1, 0, 0, 0)
+            end_date = datetime.now()
+        else:
+            start_date = convert_isodate_str_to_datetime(start_date)
+            end_date = convert_isodate_str_to_datetime(end_date)
         
         amount_field = '$amount_usd' if currency == 'USD' else '$amount_eur'
 
@@ -111,6 +133,10 @@ def get_transactions():
                 { 
                     '$match': { 
                         'company_id': { '$eq': int(company_id) }, 
+                        'timestamp': {
+                            '$gte': start_date,
+                            '$lte': end_date
+                        }
                     } 
                 }, {
                     "$group": {
@@ -139,6 +165,10 @@ def get_transactions():
                 { 
                     '$match': { 
                         'company_id': { '$eq': int(company_id) }, 
+                        'timestamp': {
+                            '$gte': start_date,
+                            '$lte': end_date
+                        }
                     } 
                 }, {
                     "$group": {
@@ -168,6 +198,10 @@ def get_transactions():
             pipeline = [{ 
                     '$match': { 
                         'company_id': { '$eq': int(company_id) }, 
+                        'timestamp': {
+                            '$gte': start_date,
+                            '$lte': end_date
+                        }
                     } 
                 }, {
                     '$group': {

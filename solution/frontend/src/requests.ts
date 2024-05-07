@@ -43,7 +43,7 @@ const fetchCompanies = async () => {
 }
 
 // GET /totals/?currency=eur&company_id=xx
-const fetchTotals = async(currency: string, companyId: string) => {
+const fetchTotals = async(currency: string, companyId: string, fromDate: Date, toDate: Date) => {
   try {
     if (companyId && companyId === "") {
       throw Error("companyId is required.");
@@ -54,6 +54,11 @@ const fetchTotals = async(currency: string, companyId: string) => {
     if (currency && currency !== "") {
       queryParams = `${queryParams}&currency=${currency}`
     }
+
+    if (fromDate && toDate) {
+      queryParams = `${queryParams}&start_date=${fromDate.toISOString()}&end_date=${toDate.toISOString()}`
+    }
+
 
     const url = `${AppConfig.API_BASE_URL}/totals${queryParams}`;
     const response = await axios.get(url, config);
@@ -66,7 +71,7 @@ const fetchTotals = async(currency: string, companyId: string) => {
 
 
 // GET /transactions/?currency=eur&agg=day&&company_id=xx   (aggregation = day|month|country, default: month)
-const fetchTransactions = async (currency: string, companyId: string, aggregate?: string) => {
+const fetchTransactions = async (currency: string, companyId: string, fromDate: Date, toDate: Date, aggregate?: string) => {
   try {
     if (companyId && companyId === "") {
       throw Error("companyId is required.");
@@ -80,6 +85,10 @@ const fetchTransactions = async (currency: string, companyId: string, aggregate?
 
     if (aggregate && aggregate !== "") {
       queryParams = `${queryParams}&agg=${aggregate}`
+    }
+
+    if (fromDate && toDate) {
+      queryParams = `${queryParams}&start_date=${fromDate.toISOString()}&end_date=${toDate.toISOString()}`
     }
 
     const url = `${AppConfig.API_BASE_URL}/transactions${queryParams}`;

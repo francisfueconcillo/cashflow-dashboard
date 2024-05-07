@@ -69,10 +69,12 @@ function Home() {
     if (company) {
       if (showLoading) setTotalsLoading(true);
       // fetch Total for the NumberCards
-      fetchTotals(currency, company.id)
+      fetchTotals(currency, company.id, fromDateRange, toDateRange)
         .then((totalsData: Totals[]) => {
           if (totalsData.length) {
             setTotals(totalsData[0]);
+          } else {
+            setTotals(null);
           }
 
           if (showLoading) setTotalsLoading(false);
@@ -83,17 +85,19 @@ function Home() {
             title: "Something's wrong. 🐾",
             description: error.message + '. Try reloading the page.',
           })
-
+          setTotals(null);
           if (showLoading) setTotalsLoading(false);
 
         });
 
       // fetch Transactions by Month for the Transactions Graph
       if (showLoading) setTransactionsLoading(true);
-      fetchTransactions(currency, company.id)
+      fetchTransactions(currency, company.id, fromDateRange, toDateRange, 'month')
         .then((trans: Transactions[]) => {
           if (trans.length) {
             setTransactions(trans);
+          } else {
+            setTransactions([]);
           }
           if (showLoading) setTransactionsLoading(false);
 
@@ -104,15 +108,18 @@ function Home() {
             title: "Something's wrong. 🐾",
             description: error.message + '. Try reloading the page.',
           })
+          setTransactions([]);
           if (showLoading) setTransactionsLoading(false);
         });
 
       // fetch Transactions by Country for the Transactions Graph
       if (showLoading) setTransactionsByCountryLoading(true);
-      fetchTransactions(currency, company.id, 'country')
+      fetchTransactions(currency, company.id, fromDateRange, toDateRange, 'country')
         .then((trans: TransactionsByCountry[]) => {
           if (trans.length) {
             setTransactionsByCountry(trans);
+          } else {
+            setTransactionsByCountry([]);
           }
           if (showLoading) setTransactionsByCountryLoading(false);
         })
@@ -122,6 +129,7 @@ function Home() {
             title: "Something's wrong. 🐾",
             description: error.message + '. Try reloading the page.',
           });
+          setTransactionsByCountry([]);
           if (showLoading) setTransactionsByCountryLoading(false);
         });
     }
@@ -154,7 +162,7 @@ function Home() {
     if (company !== initialAppState.company) {
       fetchData(true);
     }
-  }, [company, currency])
+  }, [company, currency, fromDateRange, toDateRange])
 
 
 
@@ -170,13 +178,6 @@ function Home() {
       clearInterval(intervalId);
     };
   }, [autoRefresh]); // Re-run effect when autoRefresh state changes
-
-  
-  useEffect(() => {
-    console.log("from ::", fromDateRange);
-    console.log("to ::", toDateRange);
-
-  }, [ fromDateRange, toDateRange])
 
 
   return (
