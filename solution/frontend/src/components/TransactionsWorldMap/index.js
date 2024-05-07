@@ -19,7 +19,7 @@ const getCoordinateFromCountryCode = (countryCode) => {
 }
 
 
-const TransactionsWorldMap = ({ transactions }) => {
+const TransactionsWorldMap = ({ transactions, isLoading }) => {
   const initialMarkers = [];
   const [markers, setMarkers] = useState(initialMarkers)
 
@@ -39,40 +39,42 @@ const TransactionsWorldMap = ({ transactions }) => {
       <h3>Transactions (by Country)</h3>
 
       {
-        transactions.length 
-        ? <div>
-            <ComposableMap style={{ width: "700", height: "300" }}>
-              <Geographies geography={countries}>
-                {({ geographies }) =>
-                  geographies.map((geo) => (
-                    <Geography
-                  key={geo.rsmKey}
-                  geography={geo}
-                  fill="white"
-                  stroke="gray"
-                />
-                  ))
-                }
-              </Geographies>
+        isLoading
+        ? <div className="flex items-center justify-center h-36">
+            <p className="text-center text-gray-400">Loading...</p>
+          </div>
+        : transactions.length 
+          ? <div>
+              <ComposableMap style={{ width: "700", height: "300" }}>
+                <Geographies geography={countries}>
+                  {({ geographies }) =>
+                    geographies.map((geo) => (
+                      <Geography
+                    key={geo.rsmKey}
+                    geography={geo}
+                    fill="white"
+                    stroke="gray"
+                  />
+                    ))
+                  }
+                </Geographies>
 
-              {
-                markers.map(mark => {
-                  console.log(mark)
-                  return <Marker coordinates={mark.coordinates}>
-                    <circle r={mark.value/100} fill="#F00"  fill-opacity="0.5" />
-                  </Marker>
+                {
+                  markers.map(mark => {
+                    console.log(mark)
+                    return <Marker coordinates={mark.coordinates}>
+                      <circle r={mark.value/100} fill="#F00"  fill-opacity="0.5" />
+                    </Marker>
+                  }
+                    
+                  )
                 }
-                  
-                )
-              }
-            </ComposableMap>
-          </div>
-        : <div className="flex items-center justify-center h-36">
-            <p className="text-center text-gray-300">No data</p>
-          </div>
+              </ComposableMap>
+            </div>
+          : <div className="flex items-center justify-center h-36">
+              <p className="text-center text-gray-300">No data</p>
+            </div>
       }
-
-      
 
     </div>
     

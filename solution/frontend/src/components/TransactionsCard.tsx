@@ -12,9 +12,10 @@ type CharDataPoint = {
 type Props = {
   transactions: Transactions[] | [],
   type: string,
+  isLoading: boolean,
 }
 
-const TransactionsCard = ({ transactions, type }: Props) => {
+const TransactionsCard = ({ transactions, type, isLoading }: Props) => {
 
   const initialChartData: CharDataPoint[] | [] = [];
 
@@ -44,25 +45,26 @@ const TransactionsCard = ({ transactions, type }: Props) => {
       <h3>Transactions</h3>
 
       {
-        chartData.length
-        ? <div className="flex items-center justify-center">
-            <BarChart width={1200} height={300} data={chartData} title='Transactions'>
-              <CartesianGrid strokeDasharray="3 3" />
-              <XAxis dataKey="name" />
-              <YAxis />
-              <Tooltip />
-              <Legend/>
-              <Bar dataKey="Cash-in" fill="#82ca9d" />
-              <Bar dataKey="Cash-out" fill="#C64242" />
-            </BarChart>
-          </div> 
-        : <div className="flex items-center justify-center h-36">
-            <p className="text-center text-gray-300">No data</p>
+        isLoading
+        ? <div className="flex items-center justify-center h-36">
+            <p className="text-center text-gray-600">Loading</p>
           </div>
+        : chartData.length
+          ? <div className="flex items-center justify-center">
+              <BarChart width={1200} height={300} data={chartData} title='Transactions'>
+                <CartesianGrid strokeDasharray="3 3" />
+                <XAxis dataKey="name" />
+                <YAxis />
+                <Tooltip />
+                <Legend/>
+                <Bar dataKey="Cash-in" fill="#82ca9d" />
+                <Bar dataKey="Cash-out" fill="#C64242" />
+              </BarChart>
+            </div> 
+          : <div className="flex items-center justify-center h-36">
+              <p className="text-center text-gray-300">No data</p>
+            </div>
       }
-
-
-      
     </div>
     
   );

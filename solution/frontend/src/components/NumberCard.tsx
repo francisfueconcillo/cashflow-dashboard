@@ -8,51 +8,64 @@ type Props = {
   totals: Totals | null,
   currency: string,
   type: string,
-  useColors?: boolean
+  useColors?: boolean,
+  isLoading: boolean,
 }
 
-function NumberCard({ title, totals, type, currency, useColors }: Props) {
-  let value: number = 0;
+function NumberCard({ title, totals, type, currency, useColors, isLoading }: Props) {
 
-  if (!totals) {
-    return (
-      <div className="flex flex-col p-4 bg-white rounded-xl h-36">
-        <div className="flex items-center justify-center h-36">
-          <p className="text-center text-gray-300">No data</p>
-        </div>
-      </div>
-    );
+  const getValue = (type: string):number => {
+    if (type==='debit') {
+      return totals?.total_debits || 0
+    }
+  
+    if (type==='credit') {
+      return totals?.total_credits || 0
+    }
+  
+    if (type==='profit_loss') {
+      return totals?.profit_loss|| 0
+    }
+
+    return 0;
+
   }
 
-  if (type==='debit') {
-    value = totals.total_debits
-  }
-
-  if (type==='credit') {
-    value = totals.total_credits
-  }
-
-  if (type==='profit_loss') {
-    value = totals.profit_loss
-  }
+  
 
   return (
     <div className="flex flex-col p-4 bg-white rounded-xl h-36">
-      <div>
-        <p className="text-sm">{title}</p>
-      </div>
+      {
+        isLoading
+        ? <div className="flex items-center justify-center h-36">
+            <p className="text-center text-gray-400">Loading...</p>
+          </div>
+        : totals
+          ? <div>
+              <div>
+                <p className="text-sm">{title}</p>
+              </div>
 
-      <div  className="flex justify-end space-x-2">
-        <div>
-          <p>{currency}</p>
-        </div>
-        <div className='text-5xl'>
-          <p className={ clsx({ 
-            'text-red-800': useColors && value < 0, 
-            'text-green-800': useColors && value > 0
-          }) }>{formatNumber(value)}</p>
-        </div>
-      </div>
+              <div  className="flex justify-end space-x-2">
+                <div>
+                  <p>{currency}</p>
+                </div>
+                <div className='text-5xl'>
+                  <p className={ clsx({ 
+                    'text-red-800': useColors && getValue(type) < 0, 
+                    'text-green-800': useColors && getValue(type) > 0
+                  }) }>{formatNumber(getValue(type))}</p>
+                </div>
+              </div>
+            </div>
+          : <div className="flex items-center justify-center h-36">
+              <p className="text-center text-gray-300">No data</p>
+            </div> 
+          
+          
+      }
+
+      
       
     </div>
   );

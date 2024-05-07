@@ -20,9 +20,10 @@ type CharDataPoint = {
 
 type Props = {
   transactions: Transactions[] | [],
+  isLoading: boolean
 }
 
-const ProfitLossCard = ({ transactions }: Props) => {
+const ProfitLossCard = ({ transactions, isLoading }: Props) => {
   const initialChartData: CharDataPoint[] | [] = [];
 
   const [chartData, setChartData] = useState(initialChartData)
@@ -50,26 +51,30 @@ const ProfitLossCard = ({ transactions }: Props) => {
       <h3>Profit/Loss</h3>
       <div>
         {
-          chartData.length
-          ? <div className="flex items-center justify-center">
-              <BarChart
-                width={600}
-                height={300}
-                data={chartData}
-                margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
-              >
-                <CartesianGrid strokeDasharray="3 3" />
-                <XAxis dataKey="name" />
-                <YAxis />
-                <Tooltip />
-                <Legend />
-                <Bar dataKey="profit" fill="#82ca9d"  />
-                <Bar dataKey="loss" fill="#C64242"  />
-              </BarChart>
+          isLoading
+          ? <div className="flex items-center justify-center h-36">
+              <p className="text-center text-gray-400">Loading...</p>
             </div>
-          : <div className="flex items-center justify-center h-36">
-              <p className="text-center text-gray-300">No data</p>
-            </div>
+          : chartData.length
+            ? <div className="flex items-center justify-center">
+                <BarChart
+                  width={600}
+                  height={300}
+                  data={chartData}
+                  margin={{ top: 20, right: 30, left: 20, bottom: 5 }}
+                >
+                  <CartesianGrid strokeDasharray="3 3" />
+                  <XAxis dataKey="name" />
+                  <YAxis />
+                  <Tooltip />
+                  <Legend />
+                  <Bar dataKey="profit" fill="#82ca9d"  />
+                  <Bar dataKey="loss" fill="#C64242"  />
+                </BarChart>
+              </div>
+            : <div className="flex items-center justify-center h-36">
+                <p className="text-center text-gray-300">No data</p>
+              </div>
         }
       </div>
       

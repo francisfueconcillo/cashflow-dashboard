@@ -1,5 +1,4 @@
-import React, { useEffect } from 'react';
-import Header from '../components/Header';
+import React, { useEffect, useState} from 'react';
 import CompanySelector from '../components/CompanySelector';
 import PeriodSelector from '../components/PeriodSelector';
 import CompanyCard from '../components/CompanyCard';
@@ -22,6 +21,11 @@ import TransactionsByCountry from '../context/types/TransactionsByCountry';
 
 function Home() {
 
+  const [companyLoading, setCompanyLoading] = useState(false);
+  const [totalsLoading, setTotalsLoading] = useState(false);
+  const [transactionsLoading, setTransactionsLoading] = useState(false);
+  const [transactionsByCountryLoading, setTransactionsByCountryLoading] = useState(false);
+
   const { 
     company, setCompany, 
     allCompanies, setAllCompanies, 
@@ -42,11 +46,13 @@ function Home() {
 
   useEffect(() => {
     if (allCompanies === initialAppState.allCompanies) {
+      setCompanyLoading(true);
       fetchCompanies()
         .then((companies: Company[]) => {
           if (companies.length) {
             setAllCompanies(companies);
           }
+          setCompanyLoading(false);
         })
         .catch(error => {
           toast({
@@ -54,6 +60,7 @@ function Home() {
             title: "Something's wrong. 🐾",
             description: error.message + '. Try reloading the page.',
           })
+          setCompanyLoading(false);
         });
     }
   }, [allCompanies])
@@ -62,12 +69,14 @@ function Home() {
   useEffect(()=>{
     if (company !== initialAppState.company && company) {
 
+      setTotalsLoading(true);
       // fetch Total for the NumberCards
       fetchTotals('USD', company.id)
         .then((totalsData: Totals[]) => {
           if (totalsData.length) {
             setTotals(totalsData[0]);
           }
+          setTotalsLoading(false);
         })
         .catch(error => {
           toast({
@@ -75,14 +84,17 @@ function Home() {
             title: "Something's wrong. 🐾",
             description: error.message + '. Try reloading the page.',
           })
+          setTotalsLoading(false);
         });
 
       // fetch Transactions by Month for the Transactions Graph
+      setTransactionsLoading(true);
       fetchTransactions('USD', company.id)
         .then((trans: Transactions[]) => {
           if (trans.length) {
             setTransactions(trans);
           }
+          setTransactionsLoading(false);
         })
         .catch(error => {
           toast({
@@ -90,21 +102,25 @@ function Home() {
             title: "Something's wrong. 🐾",
             description: error.message + '. Try reloading the page.',
           })
+          setTransactionsLoading(false);
         });
 
       // fetch Transactions by Country for the Transactions Graph
+      setTransactionsByCountryLoading(true);
       fetchTransactions('USD', company.id, 'country')
         .then((trans: TransactionsByCountry[]) => {
           if (trans.length) {
             setTransactionsByCountry(trans);
           }
+          setTransactionsByCountryLoading(false);
         })
         .catch(error => {
           toast({
             variant: "destructive",
             title: "Something's wrong. 🐾",
             description: error.message + '. Try reloading the page.',
-          })
+          });
+          setTransactionsByCountryLoading(false);
         });
 
       
@@ -128,7 +144,10 @@ function Home() {
     <div className="grid grid-cols-5 gap-4 px-6">
 
       <div>
-        <CompanySelector companies={allCompanies} selectHandler={companySelectHandler}/>
+        <CompanySelector 
+          companies={allCompanies} 
+          selectHandler={companySelectHandler}
+        />
       </div>
 
       <div className="col-span-2">
@@ -144,7 +163,10 @@ function Home() {
 
 
       <div className="col-start-1 col-end-3">
-        <CompanyCard company={company}/>
+        <CompanyCard 
+          company={company}  
+          isLoading={companyLoading}
+        />
       </div>
 
       <div>
@@ -153,6 +175,7 @@ function Home() {
           totals={totals} 
           type="credit" 
           currency="USD"
+          isLoading={totalsLoading}
         />
       </div>
       <div>
@@ -160,6 +183,7 @@ function Home() {
           title="Cash going-out" 
           totals={totals} type="debit"  
           currency="USD"
+          isLoading={totalsLoading}
         />
       </div>
       <div>
@@ -169,18 +193,28 @@ function Home() {
           type="profit_loss" 
           currency="USD"
           useColors={true}
+          isLoading={totalsLoading}
         />
       </div>
       <div className="col-span-5">
-        <TransactionsCard transactions={transactions} type="month"/>
+        <TransactionsCard 
+          transactions={transactions} type="month" 
+          isLoading={transactionsLoading}
+        />
       </div>
 
       <div className="col-span-3">
-        <ProfitLossCard transactions={transactions}/>
+        <ProfitLossCard 
+          transactions={transactions}
+          isLoading={transactionsLoading}
+        />
       </div>
 
       <div className="col-span-2">
-        <TransactionsWorldMap transactions={transactionsByCountry}/>
+        <TransactionsWorldMap 
+          transactions={transactionsByCountry}
+          isLoading={transactionsByCountryLoading}
+        />
       </div>
       <Toaster />
     </div>
