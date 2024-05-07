@@ -18,15 +18,16 @@ import AutoRefreshSwitch from '../components/AutoRefreshSwitch';
 import Totals from '../context/types/Totals';
 import Transactions from '../context/types/Transactions';
 import TransactionsByCountry from '../context/types/TransactionsByCountry';
+import AppConfig from '../appConfig';
 
 function Home() {
-
   const [companyLoading, setCompanyLoading] = useState(false);
   const [totalsLoading, setTotalsLoading] = useState(false);
   const [transactionsLoading, setTransactionsLoading] = useState(false);
   const [transactionsByCountryLoading, setTransactionsByCountryLoading] = useState(false);
 
   const [currency, setCurrency] = useState('USD');
+  const [autoRefresh, setAutoRefresh] = useState(false);
 
   const { 
     company, setCompany, 
@@ -42,6 +43,73 @@ function Home() {
       if (selectedCompany) {
         setCompany(selectedCompany);
       }
+    }
+  }
+
+  const changeCurrencyHandler = (newCurrency: string) => {
+    setCurrency(newCurrency);
+    setAutoRefresh(false);
+  };
+
+  const fetchData = (showLoading?: boolean) => {
+    if (company) {
+      if (showLoading) setTotalsLoading(true);
+      // fetch Total for the NumberCards
+      fetchTotals(currency, company.id)
+        .then((totalsData: Totals[]) => {
+          if (totalsData.length) {
+            setTotals(totalsData[0]);
+          }
+
+          if (showLoading) setTotalsLoading(false);
+        })
+        .catch(error => {
+          toast({
+            variant: "destructive",
+            title: "Something's wrong. 🐾",
+            description: error.message + '. Try reloading the page.',
+          })
+
+          if (showLoading) setTotalsLoading(false);
+
+        });
+
+      // fetch Transactions by Month for the Transactions Graph
+      if (showLoading) setTransactionsLoading(true);
+      fetchTransactions(currency, company.id)
+        .then((trans: Transactions[]) => {
+          if (trans.length) {
+            setTransactions(trans);
+          }
+          if (showLoading) setTransactionsLoading(false);
+
+        })
+        .catch(error => {
+          toast({
+            variant: "destructive",
+            title: "Something's wrong. 🐾",
+            description: error.message + '. Try reloading the page.',
+          })
+          if (showLoading) setTransactionsLoading(false);
+        });
+
+      // fetch Transactions by Country for the Transactions Graph
+      if (showLoading) setTransactionsByCountryLoading(true);
+      fetchTransactions(currency, company.id, 'country')
+        .then((trans: TransactionsByCountry[]) => {
+          if (trans.length) {
+            setTransactionsByCountry(trans);
+          }
+          if (showLoading) setTransactionsByCountryLoading(false);
+        })
+        .catch(error => {
+          toast({
+            variant: "destructive",
+            title: "Something's wrong. 🐾",
+            description: error.message + '. Try reloading the page.',
+          });
+          if (showLoading) setTransactionsByCountryLoading(false);
+        });
     }
   }
 
@@ -69,64 +137,25 @@ function Home() {
 
 
   useEffect(()=>{
-    if (company !== initialAppState.company && company) {
-
-      setTotalsLoading(true);
-      // fetch Total for the NumberCards
-      fetchTotals(currency, company.id)
-        .then((totalsData: Totals[]) => {
-          if (totalsData.length) {
-            setTotals(totalsData[0]);
-          }
-          setTotalsLoading(false);
-        })
-        .catch(error => {
-          toast({
-            variant: "destructive",
-            title: "Something's wrong. 🐾",
-            description: error.message + '. Try reloading the page.',
-          })
-          setTotalsLoading(false);
-        });
-
-      // fetch Transactions by Month for the Transactions Graph
-      setTransactionsLoading(true);
-      fetchTransactions(currency, company.id)
-        .then((trans: Transactions[]) => {
-          if (trans.length) {
-            setTransactions(trans);
-          }
-          setTransactionsLoading(false);
-        })
-        .catch(error => {
-          toast({
-            variant: "destructive",
-            title: "Something's wrong. 🐾",
-            description: error.message + '. Try reloading the page.',
-          })
-          setTransactionsLoading(false);
-        });
-
-      // fetch Transactions by Country for the Transactions Graph
-      setTransactionsByCountryLoading(true);
-      fetchTransactions(currency, company.id, 'country')
-        .then((trans: TransactionsByCountry[]) => {
-          if (trans.length) {
-            setTransactionsByCountry(trans);
-          }
-          setTransactionsByCountryLoading(false);
-        })
-        .catch(error => {
-          toast({
-            variant: "destructive",
-            title: "Something's wrong. 🐾",
-            description: error.message + '. Try reloading the page.',
-          });
-          setTransactionsByCountryLoading(false);
-        });
+    if (company !== initialAppState.company) {
+      fetchData(true);
     }
   }, [company, currency])
 
+
+
+  useEffect(() => {
+    let intervalId: NodeJS.Timer;
+    if (autoRefresh) {
+      fetchData(false);
+      intervalId = setInterval(fetchData, AppConfig.AUTO_REFRESH_INTERVAL);
+    }
+
+    return () => {
+      // Clean up interval when component unmounts or auto-refresh is turned off
+      clearInterval(intervalId);
+    };
+  }, [autoRefresh]); // Re-run effect when autoRefresh state changes
 
 
 
@@ -147,11 +176,14 @@ function Home() {
       <div>
         <CurrencySelector 
           currency={currency} 
-          changeHandler={(newCurrency) => setCurrency(newCurrency)}
+          changeHandler={changeCurrencyHandler}
         />
       </div>
       <div>
-        <AutoRefreshSwitch defaultChecked={false}/>
+        <AutoRefreshSwitch 
+          checked={autoRefresh}
+          changeHandler={(value: boolean) => setAutoRefresh(value)}
+        />
       </div>
 
 

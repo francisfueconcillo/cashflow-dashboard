@@ -47,7 +47,7 @@ const TransactionsCard = ({ transactions, type, isLoading }: Props) => {
       {
         isLoading
         ? <div className="flex items-center justify-center h-36">
-            <p className="text-center text-gray-600">Loading</p>
+            <p className="text-center text-gray-400">Loading...</p>
           </div>
         : chartData.length
           ? <div className="flex items-center justify-center">
