@@ -44,8 +44,8 @@ const TransactionsWorldMap = ({ transactions, isLoading }) => {
             <p className="text-center text-gray-400">Loading...</p>
           </div>
         : transactions.length 
-          ? <div>
-              <ComposableMap style={{ width: "700", height: "300" }}>
+          ? <div className="px-4">
+              <ComposableMap style={{ width: "500", height: "300" }}>
                 <Geographies geography={countries}>
                   {({ geographies }) =>
                     geographies.map((geo) => (

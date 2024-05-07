@@ -19,6 +19,8 @@ import Totals from '../context/types/Totals';
 import Transactions from '../context/types/Transactions';
 import TransactionsByCountry from '../context/types/TransactionsByCountry';
 import AppConfig from '../appConfig';
+import { addDays, format } from "date-fns"
+
 
 function Home() {
   const [companyLoading, setCompanyLoading] = useState(false);
@@ -29,6 +31,9 @@ function Home() {
   const [currency, setCurrency] = useState('USD');
   const [autoRefresh, setAutoRefresh] = useState(false);
 
+  const [fromDateRange, setFromDateRange] = useState(new Date(2018, 0, 1))
+  const [toDateRange, setToDateRange] = useState(new Date())
+
   const { 
     company, setCompany, 
     allCompanies, setAllCompanies, 
@@ -36,6 +41,15 @@ function Home() {
     transactions, setTransactions,
     transactionsByCountry, setTransactionsByCountry,
   } = useAppContext()
+
+
+  const handleFromDateChange = (from: Date | undefined) => {
+    if (from) setFromDateRange(from);
+  }
+
+  const handleToDateChange = (to: Date | undefined) => {
+    if (to) setToDateRange(to);
+  }
 
   const companySelectHandler = (companyId: string) => {
     if (company?.id !== companyId) {
@@ -157,29 +171,40 @@ function Home() {
     };
   }, [autoRefresh]); // Re-run effect when autoRefresh state changes
 
+  
+  useEffect(() => {
+    console.log("from ::", fromDateRange);
+    console.log("to ::", toDateRange);
+
+  }, [ fromDateRange, toDateRange])
 
 
   return (
     <div className="grid grid-cols-5 gap-4 p-6 ">
 
-      <div className="col-span-5 lg:col-span-1">
+      <div className="col-span-5 xl:col-span-1">
         <CompanySelector 
           companies={allCompanies} 
           selectHandler={companySelectHandler}
         />
       </div>
 
-      <div className="col-span-5 lg:col-span-2">
-        <PeriodSelector/>
+      <div className="col-span-5 xl:col-span-2">
+        <PeriodSelector 
+          fromDate={fromDateRange}
+          toDate={toDateRange}
+          setFromDateRange={handleFromDateChange}
+          setToDateRange={handleToDateChange}
+        />
       </div>
 
-      <div className="col-span-3 lg:col-span-1">
+      <div className="col-span-3 xl:col-span-1">
         <CurrencySelector 
           currency={currency} 
           changeHandler={changeCurrencyHandler}
         />
       </div>
-      <div className="col-span-2 lg:col-span-1">
+      <div className="col-span-2 xl:col-span-1">
         <AutoRefreshSwitch 
           checked={autoRefresh}
           changeHandler={(value: boolean) => setAutoRefresh(value)}
@@ -187,14 +212,14 @@ function Home() {
       </div>
 
 
-      <div className="col-span-5 lg:col-start-1 lg:col-end-3">
+      <div className="col-span-5 xl:col-start-1 xl:col-end-3">
         <CompanyCard 
           company={company}  
           isLoading={companyLoading}
         />
       </div>
 
-      <div className="col-span-5 lg:col-span-1">
+      <div className="col-span-5 xl:col-span-1">
         <NumberCard 
           title="Cash going-in" 
           totals={totals} 
@@ -203,7 +228,7 @@ function Home() {
           isLoading={totalsLoading}
         />
       </div>
-      <div className="col-span-5 lg:col-span-1">
+      <div className="col-span-5 xl:col-span-1">
         <NumberCard 
           title="Cash going-out" 
           totals={totals} type="debit"  
@@ -211,7 +236,7 @@ function Home() {
           isLoading={totalsLoading}
         />
       </div>
-      <div className="col-span-5 lg:col-span-1">
+      <div className="col-span-5 xl:col-span-1">
         <NumberCard 
           title="Profit/Loss" 
           totals={totals} 
@@ -228,14 +253,14 @@ function Home() {
         />
       </div>
 
-      <div className="col-span-5 lg:col-span-3">
+      <div className="col-span-5 xl:col-span-3">
         <ProfitLossCard 
           transactions={transactions}
           isLoading={transactionsLoading}
         />
       </div>
 
-      <div className="col-span-5 lg:col-span-2">
+      <div className="col-span-5 xl:col-span-2">
         <TransactionsWorldMap 
           transactions={transactionsByCountry}
           isLoading={transactionsByCountryLoading}
