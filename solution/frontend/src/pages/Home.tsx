@@ -26,6 +26,8 @@ function Home() {
   const [transactionsLoading, setTransactionsLoading] = useState(false);
   const [transactionsByCountryLoading, setTransactionsByCountryLoading] = useState(false);
 
+  const [currency, setCurrency] = useState('USD');
+
   const { 
     company, setCompany, 
     allCompanies, setAllCompanies, 
@@ -71,7 +73,7 @@ function Home() {
 
       setTotalsLoading(true);
       // fetch Total for the NumberCards
-      fetchTotals('USD', company.id)
+      fetchTotals(currency, company.id)
         .then((totalsData: Totals[]) => {
           if (totalsData.length) {
             setTotals(totalsData[0]);
@@ -89,7 +91,7 @@ function Home() {
 
       // fetch Transactions by Month for the Transactions Graph
       setTransactionsLoading(true);
-      fetchTransactions('USD', company.id)
+      fetchTransactions(currency, company.id)
         .then((trans: Transactions[]) => {
           if (trans.length) {
             setTransactions(trans);
@@ -107,7 +109,7 @@ function Home() {
 
       // fetch Transactions by Country for the Transactions Graph
       setTransactionsByCountryLoading(true);
-      fetchTransactions('USD', company.id, 'country')
+      fetchTransactions(currency, company.id, 'country')
         .then((trans: TransactionsByCountry[]) => {
           if (trans.length) {
             setTransactionsByCountry(trans);
@@ -122,23 +124,11 @@ function Home() {
           });
           setTransactionsByCountryLoading(false);
         });
-
-      
-
-
     }
-  }, [company])
+  }, [company, currency])
 
 
 
-
-
-  const data = [
-    { country: 'USA', value: 100 },
-    { country: 'Canada', value: 50 },
-    { country: 'UK', value: 80 },
-    // Add more countries and their transaction counts
-  ];
 
   return (
     <div className="grid grid-cols-5 gap-4 px-6">
@@ -155,7 +145,10 @@ function Home() {
       </div>
 
       <div>
-        <CurrencySelector/>
+        <CurrencySelector 
+          currency={currency} 
+          changeHandler={(newCurrency) => setCurrency(newCurrency)}
+        />
       </div>
       <div>
         <AutoRefreshSwitch defaultChecked={false}/>
@@ -174,7 +167,7 @@ function Home() {
           title="Cash going-in" 
           totals={totals} 
           type="credit" 
-          currency="USD"
+          currency={currency}
           isLoading={totalsLoading}
         />
       </div>
@@ -182,7 +175,7 @@ function Home() {
         <NumberCard 
           title="Cash going-out" 
           totals={totals} type="debit"  
-          currency="USD"
+          currency={currency}
           isLoading={totalsLoading}
         />
       </div>
@@ -191,7 +184,7 @@ function Home() {
           title="Profit/Loss" 
           totals={totals} 
           type="profit_loss" 
-          currency="USD"
+          currency={currency}
           useColors={true}
           isLoading={totalsLoading}
         />

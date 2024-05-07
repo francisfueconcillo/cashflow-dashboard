@@ -20,11 +20,12 @@ type Props = {
   placeholderText: string | 'Select an option',
   options: SelectOption[],
   defaultValue?: string,
+  onValueChange?: (value: string) => void,
 
 }
-function DropDownSelect({ title, options, placeholderText, defaultValue }: Props) {
+function DropDownSelect({ title, options, placeholderText, defaultValue, onValueChange }: Props) {
   return (
-    <Select defaultValue={defaultValue}>
+    <Select defaultValue={defaultValue} onValueChange={onValueChange}>
       <SelectTrigger className="w-[180px]">
         <SelectValue placeholder={placeholderText} />
       </SelectTrigger>

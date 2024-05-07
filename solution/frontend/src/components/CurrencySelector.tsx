@@ -2,7 +2,12 @@ import * as React from "react"
 
 import DropDownSelect, { SelectOption } from "./DropDownSelect";
 
-function CurrencySelector() {
+type Props = {
+  currency: string,
+  changeHandler: (currency: string) => void,
+}
+
+function CurrencySelector({ currency, changeHandler }: Props) {
 
   const options: SelectOption[] = [{
       name: 'USD',
@@ -20,7 +25,8 @@ function CurrencySelector() {
         options={options} 
         placeholderText="Select currency" 
         title="Currency"
-        defaultValue="USD"
+        defaultValue={currency}
+        onValueChange={changeHandler}
       />
     </div>
     
