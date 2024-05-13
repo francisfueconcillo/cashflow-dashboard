@@ -31,10 +31,21 @@ const errorHandler = (error: any) => {
   }
 }
 
-// GET /companies/?q=xx
+// GET /companies   --- retrieves the first 500 companies
 const fetchCompanies = async () => {
   try {
     const url = `${AppConfig.API_BASE_URL}/companies`;
+    const response = await axios.get(url, config);
+    return response.data;
+  } catch (error: any) {
+    errorHandler(error)
+  }
+}
+
+// GET /companies/?q=<query>   --- retrieves the first 500 companies filtered by a a query string
+const searchCompanies = async (query: string) => {
+  try {
+    const url = `${AppConfig.API_BASE_URL}/companies?q=${query}`;
     const response = await axios.get(url, config);
     return response.data;
   } catch (error: any) {
@@ -105,5 +116,5 @@ const fetchTransactions = async (currency: string, companyId: string, fromDate: 
 
 
 
-export { fetchCompanies, fetchTotals, fetchTransactions };
+export { fetchCompanies, fetchTotals, fetchTransactions, searchCompanies };
 

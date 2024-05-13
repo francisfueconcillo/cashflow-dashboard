@@ -18,14 +18,16 @@ import {
   PopoverTrigger,
 } from './ui/popover'
 
-import Company from '@/context/types/Company'
+import Company from '../context/types/Company'
+import { searchCompanies } from '../requests'
 
 type Props = {
   companies: Company[],
+  setAllCompanies: (companies: Company[] | []) => void,
   selectHandler: (companyId: string) => void,
 }
 
-function CompanySelector({ companies, selectHandler }: Props) {
+function CompanySelector({ companies, setAllCompanies, selectHandler }: Props) {
   const [open, setOpen] = React.useState(false)
   const [value, setValue] = React.useState('')
 
@@ -35,6 +37,19 @@ function CompanySelector({ companies, selectHandler }: Props) {
       selectHandler(companyId);
     }
     setOpen(false);
+  }
+
+  const customFilter = (value: string, search: string, keywords?: string[]) => {
+    if (search==='' ) return 0;
+
+    const result = companies.find(i => i.value === value);
+
+    if (result) {
+      return  result.name.toLowerCase().indexOf(search.toLowerCase()) !== -1 ? 1 :0
+    } else {
+      return 0;
+    }
+    
   }
 
   return (
@@ -57,7 +72,7 @@ function CompanySelector({ companies, selectHandler }: Props) {
         </PopoverTrigger>
 
         <PopoverContent className="w-[200px] p-0">
-          <Command>
+          <Command shouldFilter={true} filter={customFilter}>
             <CommandInput placeholder="Search company..." />
             <CommandEmpty>No data found.</CommandEmpty>
             <CommandGroup>

@@ -185,7 +185,8 @@ function Home() {
 
       <div className="col-span-5 xl:col-span-1">
         <CompanySelector 
-          companies={allCompanies} 
+          companies={allCompanies}
+          setAllCompanies={setAllCompanies}
           selectHandler={companySelectHandler}
         />
       </div>
