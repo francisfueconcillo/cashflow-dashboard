@@ -31,7 +31,7 @@ def get_companies():
         else:
             query = {}
 
-        results = list(companies_collection.find(query).limit(5000).sort('name', 1))
+        results = list(companies_collection.find(query).limit(500).sort('name', 1))
 
         # Convert results to JSON
         json_results = [{ 
