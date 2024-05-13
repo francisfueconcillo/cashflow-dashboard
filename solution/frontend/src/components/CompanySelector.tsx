@@ -22,14 +22,15 @@ import Company from '../context/types/Company'
 import { searchCompanies } from '../requests'
 
 type Props = {
-  companies: Company[],
+  allCompanies: Company[],
   setAllCompanies: (companies: Company[] | []) => void,
   selectHandler: (companyId: string) => void,
 }
 
-function CompanySelector({ companies, setAllCompanies, selectHandler }: Props) {
+function CompanySelector({ allCompanies, setAllCompanies, selectHandler }: Props) {
   const [open, setOpen] = React.useState(false)
   const [value, setValue] = React.useState('')
+  const [filteredCompanies, setFilteredCompanies] = React.useState(allCompanies.slice(0, 300));
 
   const itemSelectHandler = (companyId: string) => {
     if (companyId !== '') {
@@ -42,14 +43,29 @@ function CompanySelector({ companies, setAllCompanies, selectHandler }: Props) {
   const customFilter = (value: string, search: string, keywords?: string[]) => {
     if (search==='' ) return 0;
 
-    const result = companies.find(i => i.value === value);
+
+    
+
+    // searchCompanies(search)
+    //   .then((companies: Company[]) => {
+    //     if (companies.length) {
+    //       setAllCompanies(companies);
+    //     }
+    //   })
+    //   .catch(error => {
+    //     console.error(error);
+    //   });
+    
+    const result = allCompanies.find(i => i.value === value);
+
+    setFilteredCompanies(allCompanies.filter(i => i.name.toLowerCase().indexOf(search.toLowerCase())))
 
     if (result) {
       return  result.name.toLowerCase().indexOf(search.toLowerCase()) !== -1 ? 1 :0
     } else {
       return 0;
     }
-    
+
   }
 
   return (
@@ -65,7 +81,7 @@ function CompanySelector({ companies, setAllCompanies, selectHandler }: Props) {
             className="w-[200px] justify-between"
           >
             {value
-              ? companies.find((company) => company.value === value)?.label
+              ? filteredCompanies.find((company) => company.value === value)?.label
               : "Select company..."}
             <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
           </Button>
@@ -77,7 +93,7 @@ function CompanySelector({ companies, setAllCompanies, selectHandler }: Props) {
             <CommandEmpty>No data found.</CommandEmpty>
             <CommandGroup>
               <CommandList>
-                {companies.map((company) => {
+                {filteredCompanies.map((company) => {
                   return <CommandItem
                     key={company.value}
                     value={company.value}

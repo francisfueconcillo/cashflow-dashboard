@@ -27,6 +27,7 @@ function Home() {
   const [totalsLoading, setTotalsLoading] = useState(false);
   const [transactionsLoading, setTransactionsLoading] = useState(false);
   const [transactionsByCountryLoading, setTransactionsByCountryLoading] = useState(false);
+  const [filteredCompanies, setFilteredCompanies] = useState();
 
   const [currency, setCurrency] = useState('USD');
   const [autoRefresh, setAutoRefresh] = useState(false);
@@ -185,7 +186,7 @@ function Home() {
 
       <div className="col-span-5 xl:col-span-1">
         <CompanySelector 
-          companies={allCompanies}
+          allCompanies={allCompanies}
           setAllCompanies={setAllCompanies}
           selectHandler={companySelectHandler}
         />
